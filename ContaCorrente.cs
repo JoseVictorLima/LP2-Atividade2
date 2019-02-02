@@ -1,7 +1,11 @@
 using System.Collections.Generic;
-public class ContaCorrente
+
+namespace LP2_Atividade2
 {
-    public int Id{get;set;}
-    public decimal Taxa{get;set;}
-    public virtual Conta Conta{get;set;}
+    public class ContaCorrente
+    {
+        public int Id{get;set;}
+        public decimal Taxa{get;set;}
+        public virtual Conta Conta{get;set;}
+    }
 }
