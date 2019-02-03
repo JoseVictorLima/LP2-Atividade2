@@ -15,6 +15,7 @@ namespace LP2_Atividade2
 
         public void Sacar(decimal valor, Conta conta, BancoContext context,int type)
         {
+            string solicitacao;
             decimal desconto;
             if(conta.Saldo >= valor)
             {
@@ -22,33 +23,49 @@ namespace LP2_Atividade2
                 {
                     if(type == 1)
                     {
+                        
                         var contaC = context.ContasCorrente.Where(b => b.Conta == conta)
                                               .FirstOrDefault();
                         desconto = valor * contaC.Taxa;
+                        solicitacao = "CONTACORRENTE SAQUE- SALDO:"+ conta.Saldo+ " VALOR:" + valor + " DESCONTO:"+ desconto;
                         conta.Saldo = conta.Saldo - (valor + desconto);
+                        solicitacao = solicitacao + " SALDOATUAL:" + conta.Saldo;
+                        context.SaveChanges();
+                        var newSolicitacao = new Solicitacao() { Conta = conta, Movimentacao = solicitacao};
+                        context.Add(newSolicitacao);
                         context.SaveChanges();
                     }
                     else if(type==2)
                     {
                         var contaC = context.ContasPoupanca.Where(b => b.Conta == conta)
                                               .FirstOrDefault();
+                        solicitacao = "CONTAPOUPANCA SAQUE- SALDO:"+ conta.Saldo+ " VALOR:" + valor;
                         conta.Saldo = conta.Saldo - valor;
+                        solicitacao = solicitacao + " SALDOATUAL:" + conta.Saldo;
+                        context.SaveChanges();
+                        var newSolicitacao = new Solicitacao() { Conta = conta, Movimentacao = solicitacao};
+                        context.Add(newSolicitacao);
                         context.SaveChanges();
                     }
                     Console.WriteLine("Operação Realizada com sucesso!");
+                    Console.WriteLine(" ");
                 }catch(Exception error)
                 {
+                    error.ToString();
                     Console.WriteLine("Não foi possivel efetuar esta ação");
+                    Console.WriteLine(" ");
                 }
             }
             else
             {
                 Console.WriteLine("A conta não possui saldo suficiente");
+                Console.WriteLine(" ");
             }
         }
 
         public void Depositar(decimal valor, Conta conta, BancoContext context,int type)
         {
+            string solicitacao;
             decimal desconto;
             try
             {
@@ -57,20 +74,32 @@ namespace LP2_Atividade2
                     var contaC = context.ContasCorrente.Where(b => b.Conta == conta)
                                           .FirstOrDefault();
                     desconto = valor * contaC.Taxa;
+                    solicitacao = "CONTACORRENTE DEPOSITO- SALDO:"+ conta.Saldo+ " VALOR:" + valor + " DESCONTO:"+ desconto;
                     conta.Saldo = conta.Saldo + (valor - desconto);
+                    solicitacao = solicitacao + " SALDOATUAL:" + conta.Saldo;
+                    context.SaveChanges();var newSolicitacao = new Solicitacao() { Conta = conta, Movimentacao = solicitacao};
+                    context.Add(newSolicitacao);
                     context.SaveChanges();
                 }
                 else if(type==2)
                 {
                     var contaC = context.ContasPoupanca.Where(b => b.Conta == conta)
                                           .FirstOrDefault();
+                    solicitacao = "CONTAPOUPANCA DEPOSITO- SALDO:"+ conta.Saldo+ " VALOR:" + valor;
                     conta.Saldo = conta.Saldo + valor;
+                    solicitacao = solicitacao + " SALDOATUAL:" + conta.Saldo;
+                    context.SaveChanges();
+                    context.SaveChanges();var newSolicitacao = new Solicitacao() { Conta = conta, Movimentacao = solicitacao};
+                    context.Add(newSolicitacao);
                     context.SaveChanges();
                 }
                 Console.WriteLine("Operação Realizada com sucesso!");
+                Console.WriteLine(" ");
             }catch(Exception error)
             {
+                error.ToString();
                 Console.WriteLine("Não foi possivel efetuar esta ação");
+                Console.WriteLine(" ");
             }
             
         }

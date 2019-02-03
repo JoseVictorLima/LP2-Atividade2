@@ -11,8 +11,6 @@ namespace LP2_Atividade2
             InitOperator(context);
             int menu = 0;
             int opt = 1;
-            decimal taxa;
-            taxa = 0.10M;
             for(; opt!=0;)
             {
                 
@@ -20,8 +18,10 @@ namespace LP2_Atividade2
                 opt = menu;
                 if(menu == 1) menu = MenuContaSelec(opt,context);
                 else if(menu == 2) menu = CriarConta(context);
+                if(opt == 100)menu = 0;
                 
             }
+            Console.WriteLine(" ");
             Console.WriteLine("Volte sempre!");
         }
 
@@ -54,7 +54,16 @@ namespace LP2_Atividade2
             Console.WriteLine("Criar Conta              - 2");
             Console.WriteLine("Sair                     - 0");
             Console.WriteLine(" ");
-            opt = Int32.Parse(Console.ReadLine());
+            try
+            {
+                opt = Int32.Parse(Console.ReadLine());
+            }catch(Exception e)
+            {
+                e.ToString();
+                Console.WriteLine("Opção Invalida");
+                Console.WriteLine(" ");
+                opt = 100;
+            }
             return opt;
         }
 
@@ -70,7 +79,14 @@ namespace LP2_Atividade2
                 Console.WriteLine("Conta Poupanca           - 2");
                 Console.WriteLine("Sair                     - 0");
                 Console.WriteLine(" ");
-                opt = Int32.Parse(Console.ReadLine());
+                try
+                {
+                    opt = Int32.Parse(Console.ReadLine());
+                }catch(Exception e)
+                {
+                    e.ToString();
+                    opt = 100;
+                }
                 switch(opt)
                 {
                     case 1 :
@@ -79,7 +95,7 @@ namespace LP2_Atividade2
                         if(conta==null) {
                             access=false;
                         }
-                        else {
+                        else if(conta!=null){
                             access=true;
                         }
                         if(access==true)MenuContaCorrente(opt,context,conta);
@@ -91,7 +107,7 @@ namespace LP2_Atividade2
                         if(conta==null) {
                             access=false;
                         }
-                        else {
+                        else if(conta!=null){
                             access=true;
                         }
                         if(access==true)MenuContaPoupanca(opt,context,conta);
@@ -101,6 +117,7 @@ namespace LP2_Atividade2
 
                     default : 
                         Console.WriteLine("Opção Invalida");
+                        Console.WriteLine(" ");
                     break;
                 }
             }
@@ -117,14 +134,21 @@ namespace LP2_Atividade2
                 Console.WriteLine(" ");
                 Console.WriteLine("-------Conta Corrente-------");
                 Console.WriteLine("------------Menu------------");
-                Console.WriteLine("Sacar                - 1");
-                Console.WriteLine("Depositar            - 2");
-                Console.WriteLine("Olhar Saldo          - 3");
-                Console.WriteLine("Atualizar dados      - 4");
-                Console.WriteLine("Fechar esta conta    - 5");
-                Console.WriteLine("Voltar               - 6");
+                Console.WriteLine("Sacar                 - 1");
+                Console.WriteLine("Depositar             - 2");
+                Console.WriteLine("Olhar Saldo           - 3");
+                Console.WriteLine("Atualizar dados       - 4");
+                Console.WriteLine("Excluir esta conta    - 5");
+                Console.WriteLine("Voltar                - 6");
                 Console.WriteLine(" ");
-                opt = Int32.Parse(Console.ReadLine());
+                try
+                {
+                    opt = Int32.Parse(Console.ReadLine());
+                }catch(Exception e)
+                {
+                    e.ToString();
+                    opt = 100;
+                }
                 Console.WriteLine(" ");
                 switch(opt)
                 {
@@ -145,7 +169,7 @@ namespace LP2_Atividade2
                     break;
 
                     case 5: 
-                        OlharSaldo(conta);
+                        opt = deletarConta(context,conta,1);
                     break;
 
                     case 6 : 
@@ -153,6 +177,8 @@ namespace LP2_Atividade2
                     break;
                     default :
                         Console.WriteLine("Opção Invalida");
+                        Console.WriteLine(" ");
+                        opt = 1;
                     break;
                 }
             }
@@ -167,14 +193,21 @@ namespace LP2_Atividade2
                 Console.WriteLine(" ");
                 Console.WriteLine("-------Conta Poupanca-------");
                 Console.WriteLine("------------Menu------------");
-                Console.WriteLine("Sacar                - 1");
-                Console.WriteLine("Depositar            - 2");
-                Console.WriteLine("Olhar Saldo          - 3");
-                Console.WriteLine("Atualizar dados      - 4");
-                Console.WriteLine("Fechar esta conta    - 5");
-                Console.WriteLine("Voltar               - 6");
+                Console.WriteLine("Sacar                 - 1");
+                Console.WriteLine("Depositar             - 2");
+                Console.WriteLine("Olhar Saldo           - 3");
+                Console.WriteLine("Atualizar dados       - 4");
+                Console.WriteLine("Excluir esta conta    - 5");
+                Console.WriteLine("Voltar                - 6");
                 Console.WriteLine(" ");
-                opt = Int32.Parse(Console.ReadLine());
+                try
+                {
+                    opt = Int32.Parse(Console.ReadLine());
+                }catch(Exception e)
+                {
+                    e.ToString();
+                    opt = 100;
+                }
                 Console.WriteLine(" ");
                 switch(opt)
                 {
@@ -195,7 +228,7 @@ namespace LP2_Atividade2
                     break;
 
                     case 5: 
-                        OlharSaldo(conta);
+                        opt = deletarConta(context,conta,2);
                     break;
 
                     case 6 :
@@ -203,6 +236,8 @@ namespace LP2_Atividade2
                     break;
                     default :
                         Console.WriteLine("Opção Invalida");
+                        Console.WriteLine(" ");
+                        opt = 1;
                     break;
                 }
             }
@@ -216,10 +251,35 @@ namespace LP2_Atividade2
                 string nome;
                     Console.WriteLine("Digite seu cpf");
                     cpf = Console.ReadLine();
+                    try
+                    {
+                        var clienteCadastrado = context.Clientes.Where(b => b.Cpf == cpf)
+                                                       .FirstOrDefault();
+                        if(clienteCadastrado!=null)
+                        {
+                            Console.WriteLine("Este cpf já esta cadastrado");
+                            return 0;
+                        }
+                    }catch(Exception e)
+                    {
+                        Console.WriteLine("Estamos passando pro problemas tecnicos!");
+                        Console.WriteLine("Tente novamente dentro de alguns minutos");
+                        Console.WriteLine(" ");
+                        return 0;
+
+                    }
                     Console.WriteLine("Digite seu Nome");
                     nome = Console.ReadLine();
                     Console.WriteLine("Digite sua idade");
-                    idade =Int32.Parse(Console.ReadLine());
+                    try
+                    {
+                        idade =Int32.Parse(Console.ReadLine());
+                    }catch(Exception e)
+                    {
+                        e.ToString();
+                        Console.WriteLine("Idade Invalida");
+                        return 0;
+                    }
                     Console.WriteLine("Selecione uma de nossas Agencias:");
                     var bancos = context.Set<Banco>(); 
                     foreach (var b in bancos) 
@@ -245,7 +305,9 @@ namespace LP2_Atividade2
                             error = false;
                         }catch(Exception e)
                         {
+                            e.ToString();
                             Console.WriteLine("Agencia Não Encontrada");
+                            Console.WriteLine(" ");
                             error = true;
                         }
                     }
@@ -256,7 +318,14 @@ namespace LP2_Atividade2
                         Console.WriteLine(" ");
                         Console.WriteLine("Conta Corrente          1");
                         Console.WriteLine("Conta Poupanca          2");
-                        contaType = Int32.Parse(Console.ReadLine());
+                        try
+                        {
+                            contaType = Int32.Parse(Console.ReadLine());
+                        }catch(Exception e)
+                        {
+                            e.ToString();
+                            contaType = 100;
+                        }
                         switch(contaType)
                         {
                             case 1 :
@@ -269,6 +338,7 @@ namespace LP2_Atividade2
 
                             default :
                                 Console.WriteLine("Tipo de conta Invalido");
+                                Console.WriteLine(" ");
                             break;
                         }
                     }
@@ -290,10 +360,13 @@ namespace LP2_Atividade2
                     context.Add(newContaCorrente);     
                     context.SaveChanges();
                     Console.WriteLine("Operação Realizada com sucesso!");
+                    Console.WriteLine(" ");
                 }catch(Exception e)
                 {
+                    e.ToString();
                     Console.WriteLine(e);
                     Console.WriteLine("Não foi possivel realizar esta ação!");
+                    Console.WriteLine(" ");
                 }
             
         }
@@ -314,10 +387,12 @@ namespace LP2_Atividade2
                     context.Add(newContaPoupanca);     
                     context.SaveChanges();
                     Console.WriteLine("Operação Realizada com sucesso!");
+                    Console.WriteLine(" ");
                 }catch(Exception e)
                 {
-                    Console.WriteLine(e);
+                    e.ToString();
                     Console.WriteLine("Não foi possivel realizar esta ação!");
+                    Console.WriteLine(" ");
                 }
             
         }
@@ -339,9 +414,18 @@ namespace LP2_Atividade2
                                               .FirstOrDefault();
                     var contaCorrente = context.ContasCorrente.Where(b => b.Conta == conta)
                                               .FirstOrDefault();
+                    if(contaCorrente == null)
+                    {
+                        Console.WriteLine("Conta não encontrada");
+                        Console.WriteLine(" ");
+                        return null;
+                    }
                     }catch(Exception e)
                     {   
+                        e.ToString();
                         Console.WriteLine("Conta não encontrada");
+                        Console.WriteLine(" ");
+                        return null;
                     }
             return conta;
         }
@@ -363,9 +447,19 @@ namespace LP2_Atividade2
                                               .FirstOrDefault();
                     var contaPoupanca = context.ContasPoupanca.Where(b => b.Conta == conta)
                                               .FirstOrDefault();
+
+                    if(contaPoupanca == null)
+                    {
+                        Console.WriteLine("Conta não encontrada");
+                        Console.WriteLine(" ");
+                        return null;
+                    }
                     }catch(Exception e)
                     {   
+                        e.ToString();
                         Console.WriteLine("Conta não encontrada");
+                        Console.WriteLine(" ");
+                        return null;
                     }
             return conta;
         }
@@ -373,29 +467,61 @@ namespace LP2_Atividade2
         static void sacarCorrente(Conta conta, BancoContext context)
         {
                 Console.WriteLine("Digite a quantidade a ser Sacada");
-                decimal saque = Decimal.Parse(Console.ReadLine());
-                conta.Sacar(saque,conta,context,1);
+                decimal saque;
+                try
+                {
+                    saque = Decimal.Parse(Console.ReadLine());
+                    conta.Sacar(saque,conta,context,1);
+                }catch(Exception e)
+                {
+                    e.ToString();
+                    Console.WriteLine("Valor Invalido");
+                }
         }
 
         static void depositarCorrente(Conta conta, BancoContext context)
         {
             Console.WriteLine("Digite a quantidade a ser Depositada");
-            decimal deposito = Decimal.Parse(Console.ReadLine());
-            conta.Depositar(deposito,conta,context,1);
+            decimal deposito;
+            try
+            {
+                deposito = Decimal.Parse(Console.ReadLine());
+                conta.Depositar(deposito,conta,context,1);
+            }catch(Exception e)
+            {
+                e.ToString();
+                Console.WriteLine("Valor Invalido");
+            }
         }
 
         static void sacarPoupanca(Conta conta, BancoContext context)
         {
                 Console.WriteLine("Digite a quantidade a ser Sacada");
-                decimal saque = Decimal.Parse(Console.ReadLine());
-                conta.Sacar(saque,conta,context,2);
+                decimal saque;
+                try
+                {
+                    saque= Decimal.Parse(Console.ReadLine());
+                    conta.Sacar(saque,conta,context,2);
+                }catch(Exception e)
+                {
+                    e.ToString();
+                    Console.WriteLine("Valor Invalido");
+                }
         }
 
         static void depositarPoupanca(Conta conta, BancoContext context)
         {
             Console.WriteLine("Digite a quantidade a ser Depositada");
-            decimal deposito = Decimal.Parse(Console.ReadLine());
-            conta.Depositar(deposito,conta,context,2);
+            decimal deposito;
+            try
+            {
+                deposito = Decimal.Parse(Console.ReadLine());
+                conta.Depositar(deposito,conta,context,2);
+            }catch(Exception e)
+            {
+                    e.ToString();
+                    Console.WriteLine("Valor Invalido");
+            }
         }
 
         static void OlharSaldo(Conta conta)
@@ -406,7 +532,7 @@ namespace LP2_Atividade2
 
         static void AtualizarDados(Conta conta, BancoContext context, int opt)
         {
-            Console.WriteLine("Por Motivos de Segurança pedimos que redigite seu nome e cpf");
+            Console.WriteLine("Por Motivos de Segurança pedimos que digite novamente seu nome e cpf");
             Console.WriteLine("Digite o nome do Titular da conta");
             string nome = Console.ReadLine();
             Console.WriteLine("Digite o Cpf da conta");
@@ -421,7 +547,9 @@ namespace LP2_Atividade2
                     clienteC.atualizar(conta,clienteC,context);
                     }catch(Exception e)
                     {   
+                        e.ToString();
                         Console.WriteLine("Credenciais incorretas");
+                        Console.WriteLine(" ");
                     }
                 } else if(opt==2)
                 {
@@ -433,9 +561,111 @@ namespace LP2_Atividade2
                     clienteP.atualizar(conta,clienteP,context);
                     }catch(Exception e)
                     {   
+                        e.ToString();
                         Console.WriteLine("Credenciais incorretas");
+                        Console.WriteLine(" ");
                     }
                 }
         }
+
+        static int deletarConta(BancoContext context,Conta conta, int opt)
+        {
+                Cliente cliente = new Cliente();
+                ContaCorrente contaC = new ContaCorrente();
+                ContaPoupanca contaP = new ContaPoupanca();
+                int option = 0;
+                Console.WriteLine("Por Motivos de Segurança pedimos que digite novamente seu nome e cpf");
+                Console.WriteLine("Digite o nome do Titular da conta");
+                string nome = Console.ReadLine();
+                Console.WriteLine("Digite o Cpf da conta");
+                string cpf = Console.ReadLine();
+                try{
+                    if(opt == 1)
+                    {
+                        cliente = context.Set<Cliente>().Where(b => b.Cpf == cpf && b.Nome == nome)
+                                                        .FirstOrDefault();
+                        contaC = context.Set<ContaCorrente>().Where(b => b.Conta == conta)
+                                                             .FirstOrDefault();
+                        
+                                                                
+                    }
+                    else if(opt == 2)
+                    {
+                        cliente = context.Set<Cliente>().Where(b => b.Cpf == cpf && b.Nome == nome)
+                                                  .FirstOrDefault();
+                        contaP = context.Set<ContaPoupanca>().Where(b => b.Conta == conta)
+                                              .FirstOrDefault();
+                    }
+                    for(;option!=2;)
+                    {
+                        Console.WriteLine("Deseja realmente deletar esta conta?");
+                        Console.WriteLine("Sim -                              1");
+                        Console.WriteLine("Não -                              2");
+                        try
+                        {
+                            option =Int32.Parse(Console.ReadLine());
+                        }catch(Exception e)
+                        {
+                            e.ToString();
+                            option = 100;
+                        }
+                        switch(option)
+                        {
+                            case 1 :
+                                if(opt == 1) 
+                                {
+                                    var solicitacao = context.Set<Solicitacao>();
+                                    foreach(var s in solicitacao)
+                                    {
+                                        if(s.Conta == conta)
+                                        {
+                                            context.Remove(s);
+                                        }
+                                    }
+                                    context.Remove(contaC);
+                                    context.Remove(conta);
+                                    context.Remove(cliente);
+                                    context.SaveChanges(); 
+                                }
+                                else if(opt == 2)
+                                {
+                                    var solicitacao = context.Set<Solicitacao>();
+                                    foreach(var s in solicitacao)
+                                    {
+                                        if(s.Conta == conta)
+                                        {
+                                            context.Remove(s);
+                                        }
+                                    }
+                                    context.Remove(contaP);
+                                    context.Remove(conta);
+                                    context.Remove(cliente);
+                                    context.SaveChanges(); 
+                                }
+                                Console.WriteLine("Operação Realizada com sucesso!");
+                                Console.WriteLine(" ");
+
+                            break;
+
+                            case 2 :
+                            break;
+
+                            default :
+                                Console.WriteLine("Opção Invalida");
+                                Console.WriteLine(" ");
+                            break;
+                        }
+                        if(option == 1) return 0;
+                    }
+                    
+                    }catch(Exception e)
+                    {   
+                        e.ToString();
+                        Console.WriteLine("Credenciais incorretas");
+                        Console.WriteLine(" ");
+                    }
+                
+            return 5;
+        } 
     }
 }

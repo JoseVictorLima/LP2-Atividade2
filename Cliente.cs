@@ -23,7 +23,14 @@ namespace LP2_Atividade2
                 Console.WriteLine("Idade                  -2");
                 Console.WriteLine("Cpf                    -3");
                 Console.WriteLine("Sair                   -0");
-                opt = Int32.Parse(Console.ReadLine());
+                try
+                {
+                    opt = Int32.Parse(Console.ReadLine());
+                }catch(Exception e)
+                {
+                    e.ToString();
+                    opt = 100;
+                }
                 switch(opt)
                 {
                     case 1 :
@@ -37,25 +44,33 @@ namespace LP2_Atividade2
 
                     case 2 :
                         Console.WriteLine("Digite a nova idade");
-                        int idade = Int32.Parse(Console.ReadLine());
-                        clienteAtualizado.Idade = idade;
-                        context.SaveChanges(); 
+                        int idade;
+                        try
+                        {
+                            idade = Int32.Parse(Console.ReadLine());
+                            clienteAtualizado.Idade = idade;
+                            context.SaveChanges(); 
+                        }catch(Exception e)
+                        {
+                            e.ToString();
+                            Console.WriteLine("Idade Invalida");
+                        }
                     break;
 
                     case 3 :
                         Console.WriteLine("Digite o novo cpf");
                         string cpf = Console.ReadLine();
-                        var checkCpf = context.Clientes.Where(b => b.Cpf == cliente.Cpf && b.Nome != cliente.Nome)
+                        var checkCpf = context.Clientes.Where(b => b.Cpf == cpf)
                                                        .FirstOrDefault();
-                        if(checkCpf == null)
-                        {
-                            clienteAtualizado.Cpf = cpf;
-                            context.SaveChanges(); 
-                        }
-                        else
+                        
+                        if(checkCpf != null)
                         {
                             Console.WriteLine("Cpf digitado já existe");
+                            Console.WriteLine(" ");
+                            break;
                         }
+                        clienteAtualizado.Cpf = cpf;
+                        context.SaveChanges(); 
                             
                     break;
 
@@ -64,6 +79,7 @@ namespace LP2_Atividade2
 
                     default :
                         Console.WriteLine("Opção Invalida");
+                        Console.WriteLine(" ");
                     break;
                    
                 }
