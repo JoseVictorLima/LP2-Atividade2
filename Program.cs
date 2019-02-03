@@ -29,7 +29,7 @@ namespace LP2_Atividade2
         {  
                 if(!context.Bancos.Any())
                 {
-                    Console.WriteLine("aqui");
+                    // Console.WriteLine("aqui");
                     var newBanco = new Banco() { Nome = "Banco do Brasil" };     
                     context.Add(newBanco);     
                     context.SaveChanges();
@@ -75,7 +75,7 @@ namespace LP2_Atividade2
                 {
                     case 1 :
                         Console.WriteLine(" ");
-                        conta = VerificarConta(opt,context);
+                        conta = VerificarContaCorrente(opt,context);
                         if(conta==null) {
                             access=false;
                         }
@@ -87,7 +87,7 @@ namespace LP2_Atividade2
 
                     case 2 :
                         Console.WriteLine(" ");
-                        conta = VerificarConta(opt,context);
+                        conta = VerificarContaPoupanca(opt,context);
                         if(conta==null) {
                             access=false;
                         }
@@ -110,9 +110,10 @@ namespace LP2_Atividade2
 
         static void MenuContaCorrente(int opt, BancoContext context, Conta conta)
         {
+            Console.WriteLine(" ");
+            Console.WriteLine("Bem Vindo " + conta.Titular);
             for(;opt!=0;)
             {
-                decimal qnt;
                 Console.WriteLine(" ");
                 Console.WriteLine("-------Conta Corrente-------");
                 Console.WriteLine("------------Menu------------");
@@ -128,22 +129,25 @@ namespace LP2_Atividade2
                 switch(opt)
                 {
                     case 1: 
-                        Console.WriteLine("Quantidade a sacar:");
-                        qnt = decimal.Parse(Console.ReadLine());
-                        Console.WriteLine(" ");
-                        // sacarCorrente(contaC,qnt);
+                        sacarCorrente(conta,context);
                     break;
 
                     case 2: 
-                        Console.WriteLine("Quantidade a depositar:");
-                        qnt = decimal.Parse(Console.ReadLine());
-                        Console.WriteLine(" ");
-                        // depositarCorrente(contaC,qnt);
+                        depositarCorrente(conta,context);
                     break;
 
                     case 3: 
-                        // printarCorrente(contaC);
+                        OlharSaldo(conta);
                     break;
+
+                    case 4: 
+                        AtualizarDados(conta,context,1);
+                    break;
+
+                    case 5: 
+                        OlharSaldo(conta);
+                    break;
+
                     case 6 : 
                         opt = 0;
                     break;
@@ -155,10 +159,11 @@ namespace LP2_Atividade2
         }
 
         static void MenuContaPoupanca(int opt, BancoContext context, Conta conta)
-        {  
+        {   
+            Console.WriteLine(" ");
+            Console.WriteLine("Bem Vindo " + conta.Titular);
             for(;opt!=0;)
             {
-                decimal qnt;
                 Console.WriteLine(" ");
                 Console.WriteLine("-------Conta Poupanca-------");
                 Console.WriteLine("------------Menu------------");
@@ -174,23 +179,26 @@ namespace LP2_Atividade2
                 switch(opt)
                 {
                     case 1: 
-                        Console.WriteLine("Quantidade a sacar:");
-                        qnt = decimal.Parse(Console.ReadLine());
-                        Console.WriteLine(" ");
-                        // sacarPoupanca(contaP,qnt);
+                        sacarPoupanca(conta,context);
                     break;
 
                     case 2: 
-                        Console.WriteLine("Quantidade a depositar:");
-                        qnt = decimal.Parse(Console.ReadLine());
-                        Console.WriteLine(" ");
-                        // depositarPoupanca(contaP,qnt);
+                        depositarPoupanca(conta,context);
                     break;
 
                     case 3: 
-                        // printarPoupanca(contaP);
+                        OlharSaldo(conta);
                     break;
-                    case 4 :
+
+                    case 4: 
+                        AtualizarDados(conta,context,2);
+                    break;
+
+                    case 5: 
+                        OlharSaldo(conta);
+                    break;
+
+                    case 6 :
                         opt = 0;
                     break;
                     default :
@@ -314,14 +322,37 @@ namespace LP2_Atividade2
             
         }
 
-        public static Conta VerificarConta(int opt, BancoContext context)
+        public static Conta VerificarContaCorrente(int opt, BancoContext context)
         {   
             
             Conta conta = new Conta();
             string nome;
             string cpf;
-            bool valid = false;
-            Console.WriteLine("Digite o Titular da conta");
+            Console.WriteLine("Digite o nome do Titular da conta");
+            nome = Console.ReadLine();
+            Console.WriteLine("Digite o Cpf da conta");
+            cpf = Console.ReadLine();
+                try{
+                    var cliente = context.Clientes.Where(b => b.Cpf == cpf && b.Nome == nome)
+                                              .FirstOrDefault();
+                    conta = context.Contas.Where(b => b.Titular == nome && b.Cliente == cliente)
+                                              .FirstOrDefault();
+                    var contaCorrente = context.ContasCorrente.Where(b => b.Conta == conta)
+                                              .FirstOrDefault();
+                    }catch(Exception e)
+                    {   
+                        Console.WriteLine("Conta não encontrada");
+                    }
+            return conta;
+        }
+
+        public static Conta VerificarContaPoupanca(int opt, BancoContext context)
+        {   
+            
+            Conta conta = new Conta();
+            string nome;
+            string cpf;
+            Console.WriteLine("Digite o nome do Titular da conta");
             nome = Console.ReadLine();
             Console.WriteLine("Digite o Cpf da conta");
             cpf = Console.ReadLine();
@@ -335,22 +366,76 @@ namespace LP2_Atividade2
                     }catch(Exception e)
                     {   
                         Console.WriteLine("Conta não encontrada");
-                        valid = false;
                     }
             return conta;
         }
 
-        static void sacarCorrente(Conta conta,decimal saque)
+        static void sacarCorrente(Conta conta, BancoContext context)
         {
-            decimal saldoAnterior;
-            try
-            {
-                conta.Sacar(saque,conta);
+                Console.WriteLine("Digite a quantidade a ser Sacada");
+                decimal saque = Decimal.Parse(Console.ReadLine());
+                conta.Sacar(saque,conta,context,1);
+        }
 
-            } catch(Exception error)
-            {
-                Console.WriteLine("Não foi possivel efetuar esta ação");
-            }
+        static void depositarCorrente(Conta conta, BancoContext context)
+        {
+            Console.WriteLine("Digite a quantidade a ser Depositada");
+            decimal deposito = Decimal.Parse(Console.ReadLine());
+            conta.Depositar(deposito,conta,context,1);
+        }
+
+        static void sacarPoupanca(Conta conta, BancoContext context)
+        {
+                Console.WriteLine("Digite a quantidade a ser Sacada");
+                decimal saque = Decimal.Parse(Console.ReadLine());
+                conta.Sacar(saque,conta,context,2);
+        }
+
+        static void depositarPoupanca(Conta conta, BancoContext context)
+        {
+            Console.WriteLine("Digite a quantidade a ser Depositada");
+            decimal deposito = Decimal.Parse(Console.ReadLine());
+            conta.Depositar(deposito,conta,context,2);
+        }
+
+        static void OlharSaldo(Conta conta)
+        {
+            Console.WriteLine("Saldo disponivel: ");
+            Console.WriteLine(conta.Saldo);
+        }
+
+        static void AtualizarDados(Conta conta, BancoContext context, int opt)
+        {
+            Console.WriteLine("Por Motivos de Segurança pedimos que redigite seu nome e cpf");
+            Console.WriteLine("Digite o nome do Titular da conta");
+            string nome = Console.ReadLine();
+            Console.WriteLine("Digite o Cpf da conta");
+            string cpf = Console.ReadLine();
+                if(opt==1)
+                {
+                    try{
+                    var clienteC = context.Clientes.Where(b => b.Cpf == cpf && b.Nome == nome)
+                                              .FirstOrDefault();
+                    var contaCorrente = context.ContasCorrente.Where(b => b.Conta == conta)
+                                              .FirstOrDefault();
+                    clienteC.atualizar(conta,clienteC,context);
+                    }catch(Exception e)
+                    {   
+                        Console.WriteLine("Credenciais incorretas");
+                    }
+                } else if(opt==2)
+                {
+                    try{
+                    var clienteP = context.Clientes.Where(b => b.Cpf == cpf && b.Nome == nome)
+                                              .FirstOrDefault();
+                    var contaPoupanca = context.ContasPoupanca.Where(b => b.Conta == conta)
+                                              .FirstOrDefault();
+                    clienteP.atualizar(conta,clienteP,context);
+                    }catch(Exception e)
+                    {   
+                        Console.WriteLine("Credenciais incorretas");
+                    }
+                }
         }
     }
 }
