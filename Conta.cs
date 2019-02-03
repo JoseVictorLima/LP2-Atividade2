@@ -27,7 +27,7 @@ namespace LP2_Atividade2
                         var contaC = context.ContasCorrente.Where(b => b.Conta == conta)
                                               .FirstOrDefault();
                         desconto = valor * contaC.Taxa;
-                        solicitacao = "CONTACORRENTE SAQUE- SALDO:"+ conta.Saldo+ " VALOR:" + valor + " DESCONTO:"+ desconto;
+                        solicitacao = DateTime.Now.ToString()+" CONTACORRENTE SAQUE- SALDO:"+ conta.Saldo+ " VALOR:" + valor + " DESCONTO:"+ desconto;
                         conta.Saldo = conta.Saldo - (valor + desconto);
                         solicitacao = solicitacao + " SALDOATUAL:" + conta.Saldo;
                         context.SaveChanges();
@@ -39,7 +39,7 @@ namespace LP2_Atividade2
                     {
                         var contaC = context.ContasPoupanca.Where(b => b.Conta == conta)
                                               .FirstOrDefault();
-                        solicitacao = "CONTAPOUPANCA SAQUE- SALDO:"+ conta.Saldo+ " VALOR:" + valor;
+                        solicitacao = DateTime.Now.ToString()+" CONTAPOUPANCA SAQUE- SALDO:"+ conta.Saldo+ " VALOR:" + valor;
                         conta.Saldo = conta.Saldo - valor;
                         solicitacao = solicitacao + " SALDOATUAL:" + conta.Saldo;
                         context.SaveChanges();
@@ -74,7 +74,7 @@ namespace LP2_Atividade2
                     var contaC = context.ContasCorrente.Where(b => b.Conta == conta)
                                           .FirstOrDefault();
                     desconto = valor * contaC.Taxa;
-                    solicitacao = "CONTACORRENTE DEPOSITO- SALDO:"+ conta.Saldo+ " VALOR:" + valor + " DESCONTO:"+ desconto;
+                    solicitacao = DateTime.Now.ToString()+" CONTACORRENTE DEPOSITO- SALDO:"+ conta.Saldo+ " VALOR:" + valor + " DESCONTO:"+ desconto;
                     conta.Saldo = conta.Saldo + (valor - desconto);
                     solicitacao = solicitacao + " SALDOATUAL:" + conta.Saldo;
                     context.SaveChanges();var newSolicitacao = new Solicitacao() { Conta = conta, Movimentacao = solicitacao};
@@ -85,7 +85,7 @@ namespace LP2_Atividade2
                 {
                     var contaC = context.ContasPoupanca.Where(b => b.Conta == conta)
                                           .FirstOrDefault();
-                    solicitacao = "CONTAPOUPANCA DEPOSITO- SALDO:"+ conta.Saldo+ " VALOR:" + valor;
+                    solicitacao = DateTime.Now.ToString()+" CONTAPOUPANCA DEPOSITO- SALDO:"+ conta.Saldo+ " VALOR:" + valor;
                     conta.Saldo = conta.Saldo + valor;
                     solicitacao = solicitacao + " SALDOATUAL:" + conta.Saldo;
                     context.SaveChanges();
